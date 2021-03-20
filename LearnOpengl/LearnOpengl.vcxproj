@@ -164,15 +164,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\GLAD\src\glad.c" />
+    <ClCompile Include="..\Dependencies\ImageLoader\stb_image.cpp" />
+    <ClCompile Include="src\camera\Camera.cpp" />
     <ClCompile Include="src\shaders\Shader.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\textures\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shaders\FragmentShaders\lightShader.frag" />
     <None Include="src\shaders\FragmentShaders\shader.frag" />
+    <None Include="src\shaders\VertexShaders\lightCube.vert" />
     <None Include="src\shaders\VertexShaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\camera\Camera.h" />
     <ClInclude Include="src\shaders\Shader.h" />
+    <ClInclude Include="src\textures\Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
