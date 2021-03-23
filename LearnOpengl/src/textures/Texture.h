@@ -16,14 +16,16 @@ class Texture
     int width, height, nrComponents;
     unsigned char* data;
     std::string texPath;
+    unsigned int bindSlot;
 public:
 
     Texture(const std::string &path);
 
-    void bindTexture(GLenum texture, GLenum target) const;
-
-    int getWidth() const {return width;};
-    int getHeight() const {return height;};
+    void bind(unsigned int slot = 0);
+    
+    int getBindSlot() const { return bindSlot; };
+    int getWidth() const { return width; };
+    int getHeight() const { return height; };
 };
 
 #endif // !1

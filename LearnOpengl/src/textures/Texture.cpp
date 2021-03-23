@@ -1,20 +1,19 @@
 #include "Texture.h"
 
-
-
 Texture::Texture(const std::string &path)
   : ID(0),
     texPath(path),
     data(nullptr),
     width(0),
     height(0),
-    nrComponents(0)
+    nrComponents(0),
+    bindSlot(0)
 {
     glGenTextures(1, &ID);
 
     stbi_set_flip_vertically_on_load(true);
 
-    data = stbi_load(texPath.c_str(), &width, &height, &nrComponents, 4);
+    data = stbi_load(texPath.c_str(), &width, &height, &nrComponents, 0);
 
 
     GLenum format;
@@ -49,8 +48,9 @@ Texture::Texture(const std::string &path)
     }
 }
 
-void Texture::bindTexture(GLenum texture, GLenum target) const
+void Texture::bind(unsigned int slot)
 {
-    glActiveTexture(texture);
-    glBindTexture(target, ID);
+    bindSlot = (int)slot;
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, ID);
 }

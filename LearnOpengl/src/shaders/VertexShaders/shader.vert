@@ -9,18 +9,20 @@ out vec2 texCoord;
 out vec3 FragPosition;
 out vec3 Normal;
 
-uniform mat4 transform;
+
 uniform float time;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec2 textureValue;
+
 void main()
 {
     ourPosition = aPos;
-    texCoord = aTextureCoordinate;
+    texCoord = aTextureCoordinate * textureValue;
     FragPosition = vec3(model * vec4(aPos, 1.0));
-    Normal = mat3(transpose(inverse(model)))  * aNormal; 
+    Normal = mat3(transpose(inverse(model))) * aNormal; 
     gl_Position = projection * view * vec4(FragPosition, 1.0);
 }

@@ -31,8 +31,8 @@ void mouseCallBack(GLFWwindow* window, double xpos, double ypos);
 void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-const float WINDOW_WIDTH = 800.0f;
-const float WINDOW_HEIGHT = 600.0f;
+const float WINDOW_WIDTH = 1920.0f;
+const float WINDOW_HEIGHT = 1080.0f;
 
 #define VERTEX_SHADER_PATH          "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\shader.vert"
 #define FRAGMENT_SHADER_PATH        "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\shader.frag"
@@ -45,10 +45,12 @@ const std::string TEXTURE_BLINK_2_PATH = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\Lea
 const std::string TEXTURE_COBBLE_PATH  = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\CobblestoneTextures\\cobblestone-diff.jpg";
 const std::string TEXTURE_WOODBOX      = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\WoodBox\\container2.png";
 const std::string TEXTURE_WOODBOX_SPEC = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\WoodBox\\container2_specular.png";
-
+const std::string TEXTURE_GRASS        = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\Grass\\grassTexture.jpg";
+const std::string TEXTURE_GRASS_SPEC   = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\Grass\\grassTextureSpecular.jpg";
+const std::string TEXTURE_FLASHLIGHT   = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\FlashLightTexture\\flashLightTexture.png";
 
 //CAMERA
-Camera mainCamera(glm::vec3(-1.19576f, 1.06076f, 1.1886f));
+Camera mainCamera(glm::vec3(1.0f, 1.0f, 1.0f));
 
 float lastX = WINDOW_WIDTH / 2; 
 float lastY = WINDOW_HEIGHT / 2;
@@ -71,7 +73,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     //Se crea una ventana
-    GLFWwindow* window = glfwCreateWindow((int)WINDOW_WIDTH, (int)WINDOW_HEIGHT, "My FirstApp In OpenGL :D", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow((int)WINDOW_WIDTH, (int)WINDOW_HEIGHT, "My FirstApp In OpenGL :D", glfwGetPrimaryMonitor(), NULL);
     if (window == NULL)
     {
         std::cout << "No se ha podido crear la ventana" << std::endl;
@@ -97,25 +99,24 @@ int main()
     }
     
     
-    Shader basicShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-    Shader lightingShader(VERTEX_LIGHTSHADER_PATH, FRAGMENT_LIGHTSHADER_PATH);
+    Shader cubeShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+    Shader planeShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+    Shader lightShader(VERTEX_LIGHTSHADER_PATH, FRAGMENT_LIGHTSHADER_PATH);
 
     //VERTEX DATA
-    /*
-    float vertices[] = {
-    //Position              //Color             //Texture Coordinate
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+
+    float planeVertices[] = {
+        //Position             //Normals             //Texture Coordinate
+         1.0f,  0.0f,  1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // top right
+         1.0f,  0.0f, -1.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -1.0f,  0.0f, -1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,   // bottom left
+        -1.0f,  0.0f,  1.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left    
     };
 
-    unsigned int indices[] = {
+    unsigned int planeVerticesIndex[] = {
         0, 1, 3,
         1, 2, 3
-    };*/
-
-
+    };
 
     float cubeVertices[] = {
         //Vertex                  //Normals                //Texture Coordinate 
@@ -165,50 +166,90 @@ int main()
     float octahedronVertices[] = {
         //Vertex                //Normals                //Texture Coordinate
         -0.5f,  0.0f,  0.5f,
-         0.0f,  0.8f,  0.0f,
+         0.0f,  0.7f,  0.0f,
          0.5f,  0.0f,  0.5f,
 
-         0.0f, -0.8f,  0.0f,
+         0.0f, -0.7f,  0.0f,
         -0.5f,  0.0f,  0.5f,
          0.5f,  0.0f,  0.5f,
         
          0.5f,  0.0f,  0.5f,
-         0.0f,  0.8f,  0.0f,
+         0.0f,  0.7f,  0.0f,
          0.5f,  0.0f, -0.5f,
         
-         0.0f, -0.8f,  0.0f,
+         0.0f, -0.7f,  0.0f,
          0.5f,  0.0f,  0.5f,
          0.5f,  0.0f, -0.5f,
 
          0.5f,  0.0f, -0.5f,
-         0.0f,  0.8f,  0.0f,
+         0.0f,  0.7f,  0.0f,
         -0.5f,  0.0f, -0.5f,
 
-         0.0f, -0.8f,  0.0f,
+         0.0f, -0.7f,  0.0f,
          0.5f,  0.0f, -0.5f,
         -0.5f,  0.0f, -0.5f,
 
         -0.5f,  0.0f, -0.5f,
-         0.0f,  0.8f,  0.0f,
+         0.0f,  0.7f,  0.0f,
         -0.5f,  0.0f,  0.5f,
 
-         0.0f, -0.8f,  0.0f,
+         0.0f, -0.7f,  0.0f,
         -0.5f,  0.0f, -0.5f,
         -0.5f,  0.0f,  0.5f,
     };
 
-    glm::vec3 cubesPosition =  glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 planePosition = glm::vec3(0.0f, -0.5f, 0.0f);
+
+    glm::vec3 cubesPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f,  0.0f,  0.0f),
+        glm::vec3(2.0f,  0.0f, 5.0f),
+        glm::vec3(-1.5f, 0.0f, -2.5f),
+        glm::vec3(3.8f, 0.0f, -2.3f),
+        glm::vec3(2.4f,  0.0f, -3.5f),
+        glm::vec3(-1.7f, 0.0f, 5.5f),
+        glm::vec3(1.3f,  0.0f, -2.5f)
+    };
 
     glm::vec3 lightPosition = glm::vec3(1.0f, 1.0f, -1.0f);
 
-    unsigned int VBO, VAO/*, EBO*/;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    //Plane
+    unsigned int planeVBO, planeVAO, planeEBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glGenBuffers(1, &planeEBO);
+
+    glBindVertexArray(planeVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(planeVerticesIndex), planeVerticesIndex, GL_STATIC_DRAW);
+
+    //Position Vertex Atribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //Normals attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    //Texture coordinate
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+
+    //Cube
+    unsigned int cubeVBO, cubeVAO;
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
     //glGenBuffers(1, &EBO);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(cubeVAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -217,10 +258,6 @@ int main()
     //Position vertex attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    
-    //Color vertex attribute
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(1);
 
     //Normals attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -229,6 +266,7 @@ int main()
     //Texture Coordinate
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+
 
     //Light VAO
     unsigned int lightVAO, lightVBO;
@@ -244,41 +282,15 @@ int main()
     glEnableVertexAttribArray(0);
     
     //TEXTURES
-    Texture diffuseMap(TEXTURE_WOODBOX);
-    Texture specularMap(TEXTURE_WOODBOX_SPEC);
+    Texture cubeDiffuseMap(TEXTURE_WOODBOX);
+    Texture cubeSpecularMap(TEXTURE_WOODBOX_SPEC);
 
-    /*
-    //Diffuse Texture
-    unsigned int diffuseTexture;
-    int diffuseWidthTexture, diffuseHeightTexture, diffuseNrChannelsTexture;
+    Texture planeDiffuseMap(TEXTURE_GRASS);
+    Texture planeSpecularMap(TEXTURE_GRASS_SPEC);
 
-    glGenTextures(1, &diffuseTexture);
-
-    glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+    Texture flashlight(TEXTURE_FLASHLIGHT);
     
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    unsigned char* data = stbi_load(TEXTURE_WOODBOX, &diffuseWidthTexture, &diffuseHeightTexture, &diffuseNrChannelsTexture, 0);
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, diffuseWidthTexture, diffuseHeightTexture, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        std::cout << "Textura diffuse cargadas correctamente" << std::endl;
-    }
-    else
-        std::cout << "No se a podido cargar la textura diffuse" << std::endl;
-    std::cout << "TextureID: " << diffuseTexture << std::endl;
-
-    stbi_image_free(data);
-    */
-
-    //De esta manera agregamos la transformacion al vertex shader
-    unsigned int transformLocation = glGetUniformLocation(basicShader.ID, "transform");
+    
     
 
     //Habilita el Z-Buffer: buffer de profundidad
@@ -297,7 +309,7 @@ int main()
     
         processInput(window);
 
-        glClearColor(0.04f, 0.05f, 0.08f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         
@@ -308,6 +320,16 @@ int main()
         transform = glm::translate(transform, glm::vec3(sin((float)glfwGetTime()), cos((float)glfwGetTime()), 0.0f));
         transform = glm::rotate(transform, -(float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));*/
+
+        //BindTextures
+        
+        cubeDiffuseMap.bind();
+        cubeSpecularMap.bind(1);
+
+        planeDiffuseMap.bind(2);
+        planeSpecularMap.bind(3);
+        
+        flashlight.bind(4);
         
         //Camera
 
@@ -319,68 +341,114 @@ int main()
         glm::mat4 view = glm::mat4(1.0f);
         view = mainCamera.getViewMatrix();
         
+        glm::mat4 model = glm::mat4(1.0f);
 
         //MODEL MATRIX 4X4
         // Hacer que la luz gire
-        lightPosition = glm::vec3(sin(glfwGetTime() * 0.5) * 2.0f, sin(glfwGetTime() * 2.0f), cos(glfwGetTime() * 0.5f) * 2.0f);
+        lightPosition = glm::vec3(sin(glfwGetTime() * 0.5) * 2.0f, sin(glfwGetTime() * 2.0f) + 1.02f, cos(glfwGetTime() * 0.5f) * 2.0f);
         //Cube    
         //se activa el programa
-        basicShader.use();
+        cubeShader.use();
+        cubeShader.setUniform("textureValue", glm::vec2(1.0f));
+        cubeShader.setUniform("light.position", mainCamera.Position);
+        cubeShader.setUniform("light.direction", mainCamera.Front);
+        cubeShader.setUniform("light.cutOff", glm::cos(glm::radians(15.5f)));
+        cubeShader.setUniform("light.outerCutOff", glm::cos(glm::radians(25.0f)));
+        cubeShader.setUniform("light.ambient", glm::vec3(0.1f));
+        cubeShader.setUniform("light.diffuse", glm::vec3(1.0f));
+        cubeShader.setUniform("light.specular", glm::vec3(1.0f));
 
-        basicShader.setUniformVec3("light.position", lightPosition);
-        basicShader.setUniformVec3("light.ambient", glm::vec3(0.1f));
-        basicShader.setUniformVec3("light.diffuse", glm::vec3(1.0f));
-        basicShader.setUniformVec3("light.specular", glm::vec3(1.0f));
+        cubeShader.setUniform("light.constant", 1.0f);
+        cubeShader.setUniform("light.linear", 0.027f);
+        cubeShader.setUniform("light.quadratic", 0.0028f);
 
-
-        diffuseMap.bindTexture(GL_TEXTURE0,GL_TEXTURE_2D);
-        specularMap.bindTexture(GL_TEXTURE1, GL_TEXTURE_2D);
-
-        basicShader.setUniformInt("material.diffuse", 0);
-        basicShader.setUniformInt("material.specular", 1);
-        basicShader.setUniformFloat("material.shininess", 128.0f);
-
-
-        basicShader.setUniformVec3("viewPosition", mainCamera.Position);
-
-        basicShader.setUniformFloat("time", (float)glfwGetTime());
-        basicShader.setUniformMat4("projection", projection);
-        basicShader.setUniformMat4("view", view);
-
-        glm::mat4 model = glm::mat4(1.0f);
-        
-        model = glm::translate(model, cubesPosition);
-        
-        basicShader.setUniformMat4("model", model);
         
 
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        cubeShader.setUniform("material.diffuse", cubeDiffuseMap.getBindSlot());
+        cubeShader.setUniform("material.specular", cubeSpecularMap.getBindSlot());
+        cubeShader.setUniform("material.shininess", 128.0f);
+
+
+        cubeShader.setUniform("viewPosition", mainCamera.Position);
+
+        cubeShader.setUniform("time", (float)glfwGetTime());
+        cubeShader.setUniform("projection", projection);
+        cubeShader.setUniform("view", view);
+
+        
+        for (glm::vec3 cubePosition : cubePositions)
+        {
+            model = glm::mat4(1.0f);
+
+            model = glm::translate(model, cubePosition);
+            
+            model = glm::rotate(model, cubePosition.x + cubePosition.y, glm::vec3(0.0f, 1.0f, 0.0f));
+            cubeShader.setUniform("model", model);
+        
+            glBindVertexArray(cubeVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         
         //Light cube
-        lightingShader.use();
-        lightingShader.setUniformVec3("color", glm::vec3(1.0f));
-        lightingShader.setUniformMat4("projection", projection);
-        lightingShader.setUniformMat4("view", view);
+        lightShader.use();
+        lightShader.setUniform("color", glm::vec3(1.0f));
+        lightShader.setUniform("projection", projection);
+        lightShader.setUniform("view", view);
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPosition);
         model = glm::scale(model, glm::vec3(0.1f));
-        lightingShader.setUniformMat4("model", model);
-
+        lightShader.setUniform("model", model);
 
         glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 24);
+
+        //Plane
+        planeShader.use();
+        planeShader.setUniform("textureValue", glm::vec2((float)planeDiffuseMap.getHeight() / (float)planeDiffuseMap.getWidth() * 1.0f, 1.0f));
+        planeShader.setUniform("light.position", mainCamera.Position);
+        planeShader.setUniform("light.direction", mainCamera.Front);
+        planeShader.setUniform("light.cutOff", glm::cos(glm::radians(15.5f)));
+        planeShader.setUniform("light.outerCutOff", glm::cos(glm::radians(25.0f)));
+        planeShader.setUniform("light.ambient", glm::vec3(0.1f));
+        planeShader.setUniform("light.diffuse", glm::vec3(1.0f));
+        planeShader.setUniform("light.specular", glm::vec3(1.0f));
+
+        planeShader.setUniform("light.constant", 1.0f);
+        planeShader.setUniform("light.linear", 0.027f);
+        planeShader.setUniform("light.quadratic", 0.0028f);
+
         
+        
+
+        planeShader.setUniform("material.diffuse", planeDiffuseMap.getBindSlot());
+        planeShader.setUniform("material.specular", planeSpecularMap.getBindSlot());
+        planeShader.setUniform("material.shininess", 32.0f);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, planePosition);
+        model = glm::scale(model, glm::vec3(6.0f));
+        planeShader.setUniform("model", model);
+
+        planeShader.setUniform("viewPosition", mainCamera.Position);
+
+        planeShader.setUniform("time", (float)glfwGetTime());
+        planeShader.setUniform("projection", projection);
+        planeShader.setUniform("view", view);
+
+        glBindVertexArray(planeVAO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightVAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &cubeVBO);
     glDeleteBuffers(1, &lightVBO);
     
     glfwTerminate();
