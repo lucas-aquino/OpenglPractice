@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <string.h>
+#include <assimp/scene.h>
 
 //GLM
 #include <glm.hpp>
@@ -31,15 +32,15 @@ void mouseCallBack(GLFWwindow* window, double xpos, double ypos);
 void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-const float WINDOW_WIDTH = 1920.0f;
-const float WINDOW_HEIGHT = 1080.0f;
+const float WINDOW_WIDTH = 1280.0f;
+const float WINDOW_HEIGHT = 720.0f;
 
-#define VERTEX_SHADER_PATH          "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\shader.vert"
-#define FRAGMENT_SHADER_PATH        "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\shader.frag"
+#define VERTEX_SHADER_PATH               "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\shader.vert"
+#define FRAGMENT_SHADER_PATH             "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\shader.frag"
 
-#define VERTEX_LIGHTSHADER_PATH     "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\lightCube.vert"
-#define FRAGMENT_LIGHTSHADER_PATH   "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\lightShader.frag"
-
+#define VERTEX_LIGHTSHADER_PATH          "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\lightCube.vert"
+#define FRAGMENT_LIGHTSHADER_PATH        "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\lightShader.frag"
+                                             
 const std::string TEXTURE_BLINK_PATH   = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\TestTexture\\BlinkGuy.png"; 
 const std::string TEXTURE_BLINK_2_PATH = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\TestTexture\\BlinkGuy-2.png";
 const std::string TEXTURE_COBBLE_PATH  = "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\textures\\CobblestoneTextures\\cobblestone-diff.jpg";
@@ -73,7 +74,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     //Se crea una ventana
-    GLFWwindow* window = glfwCreateWindow((int)WINDOW_WIDTH, (int)WINDOW_HEIGHT, "My FirstApp In OpenGL :D", glfwGetPrimaryMonitor(), NULL);
+    GLFWwindow* window = glfwCreateWindow((int)WINDOW_WIDTH, (int)WINDOW_HEIGHT, "My FirstApp In OpenGL :D", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "No se ha podido crear la ventana" << std::endl;
@@ -203,16 +204,23 @@ int main()
     glm::vec3 cubesPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
     glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  0.0f, 5.0f),
+        glm::vec3( 0.0f, 0.0f,  0.0f),
+        glm::vec3( 2.0f, 0.0f,  5.0f),
         glm::vec3(-1.5f, 0.0f, -2.5f),
-        glm::vec3(3.8f, 0.0f, -2.3f),
-        glm::vec3(2.4f,  0.0f, -3.5f),
-        glm::vec3(-1.7f, 0.0f, 5.5f),
-        glm::vec3(1.3f,  0.0f, -2.5f)
+        glm::vec3( 3.8f, 0.0f, -2.3f),
+        glm::vec3( 2.4f, 0.0f, -3.5f),
+        glm::vec3(-1.7f, 0.0f,  5.5f),
+        glm::vec3( 1.3f, 0.0f, -2.5f)
     };
 
     glm::vec3 lightPosition = glm::vec3(1.0f, 1.0f, -1.0f);
+
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3( 0.7f,  1.2f,  2.0f),
+        glm::vec3( 2.3f,  3.3f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3( 0.0f,  4.0f, -3.0f)
+    };
 
     //Plane
     unsigned int planeVBO, planeVAO, planeEBO;
@@ -309,7 +317,7 @@ int main()
     
         processInput(window);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         
@@ -345,28 +353,69 @@ int main()
 
         //MODEL MATRIX 4X4
         // Hacer que la luz gire
-        lightPosition = glm::vec3(sin(glfwGetTime() * 0.5) * 2.0f, sin(glfwGetTime() * 2.0f) + 1.02f, cos(glfwGetTime() * 0.5f) * 2.0f);
+        //lightPosition = glm::vec3(sin(glfwGetTime() * 0.5) * 2.0f, sin(glfwGetTime() * 2.0f) + 1.02f, cos(glfwGetTime() * 0.5f) * 2.0f);
+        
+        //Light cube
+        lightShader.use();
+        lightShader.setUniform("color", glm::vec3(1.0f));
+        lightShader.setUniform("projection", projection);
+        lightShader.setUniform("view", view);
+
+        for (int i = 0; i < 4; i++)
+        {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.1f));
+            lightShader.setUniform("model", model);
+
+            glBindVertexArray(lightVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 24);
+        }
+        
         //Cube    
         //se activa el programa
         cubeShader.use();
         cubeShader.setUniform("textureValue", glm::vec2(1.0f));
-        cubeShader.setUniform("light.position", mainCamera.Position);
-        cubeShader.setUniform("light.direction", mainCamera.Front);
-        cubeShader.setUniform("light.cutOff", glm::cos(glm::radians(15.5f)));
-        cubeShader.setUniform("light.outerCutOff", glm::cos(glm::radians(25.0f)));
-        cubeShader.setUniform("light.ambient", glm::vec3(0.1f));
-        cubeShader.setUniform("light.diffuse", glm::vec3(1.0f));
-        cubeShader.setUniform("light.specular", glm::vec3(1.0f));
 
-        cubeShader.setUniform("light.constant", 1.0f);
-        cubeShader.setUniform("light.linear", 0.027f);
-        cubeShader.setUniform("light.quadratic", 0.0028f);
+        //Directional light
+        cubeShader.setUniform("directionalLight.direction", glm::vec3(5.0f, 0.0f, 10.0f));
+        cubeShader.setUniform("directionalLight.ambient", glm::vec3(0.1f));
+        cubeShader.setUniform("directionalLight.diffuse", glm::vec3(0.2f, 0.0f, 0.2f));
+        cubeShader.setUniform("directionalLight.specular", glm::vec3(0.5f));
+
+
+        //Point Light
+        for (int i = 0; i < 4; i++)
+        {
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].position", pointLightPositions[i]);
+                                  
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].constant", 1.0f);
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].linear", 0.027f);
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].quadratic", 0.0028f);
+                                  
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].ambient", glm::vec3(0.1f));
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].diffuse", glm::vec3(0.02f, 0.0f, 0.04f));
+            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.0f, 0.4f));
+        }
+
+        //SpotLight
+        cubeShader.setUniform("spotlight.position", mainCamera.Position);
+        cubeShader.setUniform("spotlight.direction", mainCamera.Front);
+        cubeShader.setUniform("spotlight.cutOff", glm::cos(glm::radians(15.5f)));
+        cubeShader.setUniform("spotlight.outerCutOff", glm::cos(glm::radians(25.0f)));
+        cubeShader.setUniform("spotlight.ambient", glm::vec3(0.1f));
+        cubeShader.setUniform("spotlight.diffuse", glm::vec3(1.0f));
+        cubeShader.setUniform("spotlight.specular", glm::vec3(1.0f));
+
+        cubeShader.setUniform("spotlight.constant", 1.0f);
+        cubeShader.setUniform("spotlight.linear", 0.027f);
+        cubeShader.setUniform("spotlight.quadratic", 0.0028f);
 
         
 
         cubeShader.setUniform("material.diffuse", cubeDiffuseMap.getBindSlot());
         cubeShader.setUniform("material.specular", cubeSpecularMap.getBindSlot());
-        cubeShader.setUniform("material.shininess", 128.0f);
+        cubeShader.setUniform("material.shininess", 32.0f);
 
 
         cubeShader.setUniform("viewPosition", mainCamera.Position);
@@ -390,33 +439,44 @@ int main()
         }
 
         
-        //Light cube
-        lightShader.use();
-        lightShader.setUniform("color", glm::vec3(1.0f));
-        lightShader.setUniform("projection", projection);
-        lightShader.setUniform("view", view);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPosition);
-        model = glm::scale(model, glm::vec3(0.1f));
-        lightShader.setUniform("model", model);
-
-        glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 24);
+        
 
         //Plane
         planeShader.use();
         planeShader.setUniform("textureValue", glm::vec2((float)planeDiffuseMap.getHeight() / (float)planeDiffuseMap.getWidth() * 1.0f, 1.0f));
-        planeShader.setUniform("light.position", mainCamera.Position);
-        planeShader.setUniform("light.direction", mainCamera.Front);
-        planeShader.setUniform("light.cutOff", glm::cos(glm::radians(15.5f)));
-        planeShader.setUniform("light.outerCutOff", glm::cos(glm::radians(25.0f)));
-        planeShader.setUniform("light.ambient", glm::vec3(0.1f));
-        planeShader.setUniform("light.diffuse", glm::vec3(1.0f));
-        planeShader.setUniform("light.specular", glm::vec3(1.0f));
 
-        planeShader.setUniform("light.constant", 1.0f);
-        planeShader.setUniform("light.linear", 0.027f);
-        planeShader.setUniform("light.quadratic", 0.0028f);
+        //Directional light
+        planeShader.setUniform("directionalLight.direction", glm::vec3(0.5f, 0.0f, 1.0f));
+        planeShader.setUniform("directionalLight.ambient", glm::vec3(0.1f));
+        planeShader.setUniform("directionalLight.diffuse", glm::vec3(0.02f,0.01f,0.03f));
+        planeShader.setUniform("directionalLight.specular", glm::vec3(0.01f));
+
+        //Point Light
+        for (int i = 0; i < 4; i++)
+        {
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].position", pointLightPositions[i]);
+                                  
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].constant", 1.0f);
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].linear", 0.027f);
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].quadratic", 0.0028f);
+                                  
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].ambient", glm::vec3(0.1f));
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].diffuse", glm::vec3(0.02f, 0.0f, 0.04f));
+            planeShader.setUniform("pointLight[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.0f, 0.4f));
+        }
+        
+        //SpotLight
+        planeShader.setUniform("spotlight.position", mainCamera.Position);
+        planeShader.setUniform("spotlight.direction", mainCamera.Front);
+        planeShader.setUniform("spotlight.cutOff", glm::cos(glm::radians(15.5f)));
+        planeShader.setUniform("spotlight.outerCutOff", glm::cos(glm::radians(25.0f)));
+        planeShader.setUniform("spotlight.ambient", glm::vec3(0.1f));
+        planeShader.setUniform("spotlight.diffuse", glm::vec3(1.0f));
+        planeShader.setUniform("spotlight.specular", glm::vec3(1.0f));
+
+        planeShader.setUniform("spotlight.constant", 1.0f);
+        planeShader.setUniform("spotlight.linear", 0.027f);
+        planeShader.setUniform("spotlight.quadratic", 0.0028f);
 
         
         

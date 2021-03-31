@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)Dependencies\GLFW\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\ImageLoader;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLFW\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\ImageLoader;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\</IntDir>
     <SourcePath>$(VC_SourcePath);</SourcePath>
@@ -88,8 +88,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)Dependencies\GLFW\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\ImageLoader;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLFW\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\ImageLoader;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\</IntDir>
     <SourcePath>$(VC_SourcePath);</SourcePath>
