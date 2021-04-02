@@ -76,7 +76,7 @@
     <IncludePath>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\ImageLoader;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\</IntDir>
-    <SourcePath>$(VC_SourcePath);</SourcePath>
+    <SourcePath>D:\Dev\C++\OpenGL\LearnOpengl\LearnOpengl\src;$(VC_SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -92,7 +92,7 @@
     <IncludePath>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\ImageLoader;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\</IntDir>
-    <SourcePath>$(VC_SourcePath);</SourcePath>
+    <SourcePath>D:\Dev\C++\OpenGL\LearnOpengl\LearnOpengl\src;$(VC_SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -108,11 +108,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,11 +141,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Dev\C++\OpenGL\LearnOpengl\Dependencies\ASSIMP\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,21 +171,26 @@
   <ItemGroup>
     <ClCompile Include="..\Dependencies\GLAD\src\glad.c" />
     <ClCompile Include="..\Dependencies\ImageLoader\stb_image.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
     <ClCompile Include="src\camera\Camera.cpp" />
+    <ClCompile Include="src\mesh\Model.cpp" />
     <ClCompile Include="src\shaders\Shader.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\textures\Texture.cpp" />
+    <ClCompile Include="src\textures\ImageTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\FragmentShaders\lightShader.frag" />
+    <None Include="src\shaders\FragmentShaders\model.frag" />
     <None Include="src\shaders\FragmentShaders\shader.frag" />
     <None Include="src\shaders\VertexShaders\lightCube.vert" />
     <None Include="src\shaders\VertexShaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\mesh\Mesh.h" />
     <ClInclude Include="src\camera\Camera.h" />
+    <ClInclude Include="src\mesh\Model.h" />
     <ClInclude Include="src\shaders\Shader.h" />
-    <ClInclude Include="src\textures\Texture.h" />
+    <ClInclude Include="src\textures\ImageTexture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

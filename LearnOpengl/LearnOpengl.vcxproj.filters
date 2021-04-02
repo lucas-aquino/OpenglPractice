@@ -27,10 +27,16 @@
     <ClCompile Include="src\camera\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\textures\Texture.cpp">
+    <ClCompile Include="src\textures\ImageTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Dependencies\ImageLoader\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +45,7 @@
     <None Include="src\shaders\FragmentShaders\shader.frag" />
     <None Include="src\shaders\FragmentShaders\lightShader.frag" />
     <None Include="src\shaders\VertexShaders\lightCube.vert" />
+    <None Include="src\shaders\FragmentShaders\model.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\shaders\Shader.h">
@@ -47,7 +54,13 @@
     <ClInclude Include="src\camera\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\textures\Texture.h">
+    <ClInclude Include="src\textures\ImageTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
