@@ -47,7 +47,7 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\mesh\\Models\\textures\\0x95852189.png
-map_Ks D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\mesh\\Models\\textures\\spec.jpg
+map_Ks D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\mesh\\Models\\textures\\spec2.jpg
 
 newmtl submesh_4
 Ns 225.000000

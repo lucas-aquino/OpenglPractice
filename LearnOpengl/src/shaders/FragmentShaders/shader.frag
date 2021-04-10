@@ -1,5 +1,5 @@
 #version 330 core
-
+    
 struct Material 
 {
     sampler2D diffuse;
@@ -32,8 +32,7 @@ struct PointLight
     vec3 diffuse;
     vec3 specular;
 };
-#define NR_POINT_LIGHT 4
-uniform PointLight pointLight[NR_POINT_LIGHT];
+uniform PointLight pointLight;
 
 //Spot Light Struct
 struct SpotLight
@@ -82,8 +81,7 @@ void main()
 
     vec3 result = calculateDirectionalLight(directionalLight, norm, viewDirection);
 
-    for(int i = 0; i < NR_POINT_LIGHT; i++)
-        result += calculatePointLight(pointLight[i], norm, FragPosition, viewDirection);
+    result += calculatePointLight(pointLight, norm, FragPosition, viewDirection);
     
     result += calculateSpotLight(spotlight, norm, FragPosition, viewDirection);
 

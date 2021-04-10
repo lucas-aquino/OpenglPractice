@@ -48,18 +48,24 @@ void Mesh::draw(Shader& shader)
         std::string number;
         std::string name = textures[i].type;
 
-        if(name == "texture_diffuse")
+        if (name == "texture_diffuse")
+        {
             number = std::to_string(diffuseNr++);
-        else if(name == "texture_specular")
+            name = "diffuse";
+        }
+        else if (name == "texture_specular")
+        {
             number = std::to_string(specularNr++);
+            name = "specular";
+        }
         
-        shader.setUniform("material." + name + number, (float)i);
+        shader.setUniform("material." + name, (float)i);
         glBindTexture(GL_TEXTURE_2D, textures[i].ID);
     }
     glActiveTexture(GL_TEXTURE0);
 
     //Draw Mesh
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }

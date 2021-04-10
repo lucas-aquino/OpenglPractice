@@ -5,8 +5,8 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <glfw3.h>
-#include <string.h>
 
+#include <string.h>
 
 #include <stb_image.h>
 

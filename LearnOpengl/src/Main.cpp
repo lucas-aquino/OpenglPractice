@@ -4,20 +4,22 @@
 #include <glfw3.h>
 #include <string.h>
 #include <filesystem>
+#include <stb_image.h>
 
 //GLM
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
-//Image loader
-#define STB_IMAGE_IMPLEMENTATION
 
 #include "shaders/Shader.h"
 #include "camera/Camera.h"
 #include "textures/ImageTexture.h"
 #include "mesh/Mesh.h"
 #include "mesh/Model.h"
+#include "lights/PointLight.h"
+#include "lights/SpotLight.h"
+#include "lights/DirectionalLight.h"
 
 //TODO:: HACER LAS CLASES DE LUCES
 
@@ -39,6 +41,8 @@ const float WINDOW_HEIGHT = 720.0f;
 
 #define VERTEX_SHADER_PATH               "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\shader.vert"
 #define FRAGMENT_SHADER_PATH             "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\shader.frag"
+
+#define DEPTH_BUFFER_TEST                "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\depthBufferTestShader.frag"  
 
 #define VERTEX_LIGHTSHADER_PATH          "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\VertexShaders\\lightCube.vert"
 #define FRAGMENT_LIGHTSHADER_PATH        "D:\\Dev\\C++\\OpenGL\\LearnOpengl\\LearnOpengl\\src\\shaders\\FragmentShaders\\lightShader.frag"
@@ -88,7 +92,6 @@ int main()
     }
 
     std::cout << std::filesystem::current_path() << std::endl;
-
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     //Sirve para bloquear el cursor a la pantalla
@@ -107,11 +110,11 @@ int main()
     }
     
     
-    Shader cubeShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-    Shader planeShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-    Shader susaneShader(VERTEX_SHADER_PATH, FRAGMENT_MODEL_SHADER_PATH);
+    Shader cubeShader(VERTEX_SHADER_PATH, DEPTH_BUFFER_TEST);
+    Shader planeShader(VERTEX_SHADER_PATH, DEPTH_BUFFER_TEST);
+    Shader marioShader(VERTEX_SHADER_PATH, DEPTH_BUFFER_TEST);
 
-    Shader lightShader(VERTEX_LIGHTSHADER_PATH, FRAGMENT_LIGHTSHADER_PATH);
+    Shader lightShader(VERTEX_LIGHTSHADER_PATH, DEPTH_BUFFER_TEST);
 
 
     //VERTEX DATA
@@ -307,9 +310,14 @@ int main()
 
     ImageTexture flashlight(TEXTURE_FLASHLIGHT);
     
+
+    //Lights
+    DirectionalLight sunLight;
+    PointLight focoLight;
+    SpotLight flashLight;
     
     //MODEL LOAD
-    Model suzaneModel((char *)"D://Dev/C++/OpenGL/LearnOpengl/LearnOpengl/src/mesh/Models/Primitives/Mario.obj");
+    Model marioModel((char *)"D://Dev/C++/OpenGL/LearnOpengl/LearnOpengl/src/mesh/Models/Primitives/Mario.obj");
 
     //Habilita el Z-Buffer: buffer de profundidad
     glEnable(GL_DEPTH_TEST);
@@ -364,65 +372,28 @@ int main()
         //MODEL MATRIX 4X4
         // Hacer que la luz gire
         //lightPosition = glm::vec3(sin(glfwGetTime() * 0.5) * 2.0f, sin(glfwGetTime() * 2.0f) + 1.02f, cos(glfwGetTime() * 0.5f) * 2.0f);
-        
-        //Light cube
-        lightShader.use();
-        lightShader.setUniform("color", glm::vec3(1.0f));
-        lightShader.setUniform("projection", projection);
-        lightShader.setUniform("view", view);
 
-        for (int i = 0; i < 4; i++)
-        {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.1f));
-            lightShader.setUniform("model", model);
-
-            glBindVertexArray(lightVAO);
-            glDrawArrays(GL_TRIANGLES, 0, 24);
-        }
+        sunLight.setDiffuse(glm::vec3(0.7f));
+        sunLight.setDirection(-0.2f, -1.0f, -0.3f);
+        sunLight.setSpecular(glm::vec3(0.5f));
         
+        flashLight.setPosition(glm::vec3(1.0f));
+
         //Cube    
         //se activa el programa
         cubeShader.use();
         cubeShader.setUniform("textureValue", glm::vec2(1.0f));
 
         //Directional light
-        cubeShader.setUniform("directionalLight.direction", glm::vec3(5.0f, 0.0f, 10.0f));
-        cubeShader.setUniform("directionalLight.ambient", glm::vec3(0.1f));
-        cubeShader.setUniform("directionalLight.diffuse", glm::vec3(0.2f, 0.0f, 0.2f));
-        cubeShader.setUniform("directionalLight.specular", glm::vec3(0.5f));
-
+        sunLight.draw(cubeShader);
 
         //Point Light
-        for (int i = 0; i < 4; i++)
-        {
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].position", pointLightPositions[i]);
-                                  
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].constant", 1.0f);
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].linear", 0.027f);
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].quadratic", 0.0028f);
-                                  
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].ambient", glm::vec3(0.1f));
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].diffuse", glm::vec3(1.0f, 1.0f, 0.5f));
-            cubeShader.setUniform("pointLight[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.0f, 0.4f));
-        }
+        focoLight.draw(cubeShader);
 
         //SpotLight
-        cubeShader.setUniform("spotlight.position", glm::vec3(4.0f, 4.0f, 4.0f));
-        cubeShader.setUniform("spotlight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
-        cubeShader.setUniform("spotlight.cutOff", glm::cos(glm::radians(15.5f)));
-        cubeShader.setUniform("spotlight.outerCutOff", glm::cos(glm::radians(25.0f)));
-        cubeShader.setUniform("spotlight.ambient", glm::vec3(0.1f));
-        cubeShader.setUniform("spotlight.diffuse", glm::vec3(1.0f));
-        cubeShader.setUniform("spotlight.specular", glm::vec3(1.0f));
+        flashLight.draw(cubeShader);
 
-        cubeShader.setUniform("spotlight.constant", 1.0f);
-        cubeShader.setUniform("spotlight.linear", 0.027f);
-        cubeShader.setUniform("spotlight.quadratic", 0.0028f);
-
-        
-
+        //Material
         cubeShader.setUniform("material.diffuse", cubeDiffuseMap.getBindSlot());
         cubeShader.setUniform("material.specular", cubeSpecularMap.getBindSlot());
         cubeShader.setUniform("material.shininess", 32.0f);
@@ -456,37 +427,13 @@ int main()
         planeShader.setUniform("textureValue", glm::vec2((float)planeDiffuseMap.getHeight() / (float)planeDiffuseMap.getWidth() * 1.0f, 1.0f));
 
         //Directional light
-        planeShader.setUniform("directionalLight.direction", glm::vec3(0.5f, 0.0f, 1.0f));
-        planeShader.setUniform("directionalLight.ambient", glm::vec3(0.1f));
-        planeShader.setUniform("directionalLight.diffuse", glm::vec3(0.02f,0.01f,0.03f));
-        planeShader.setUniform("directionalLight.specular", glm::vec3(0.01f));
+        sunLight.draw(planeShader);
 
         //Point Light
-        for (int i = 0; i < 4; i++)
-        {
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].position", pointLightPositions[i]);
-                                  
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].constant", 1.0f);
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].linear", 0.027f);
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].quadratic", 0.0028f);
-                                  
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].ambient", glm::vec3(0.1f));
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].diffuse", glm::vec3(1.0f, 1.0f, 0.5f));
-            planeShader.setUniform("pointLight[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.0f, 0.4f));
-        }
-        
-        //SpotLight
-        planeShader.setUniform("spotlight.position", glm::vec3(4.0f, 4.0f, 4.0f));
-        planeShader.setUniform("spotlight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
-        planeShader.setUniform("spotlight.cutOff", glm::cos(glm::radians(15.5f)));
-        planeShader.setUniform("spotlight.outerCutOff", glm::cos(glm::radians(25.0f)));
-        planeShader.setUniform("spotlight.ambient", glm::vec3(0.1f));
-        planeShader.setUniform("spotlight.diffuse", glm::vec3(1.0f));
-        planeShader.setUniform("spotlight.specular", glm::vec3(1.0f));
+        focoLight.draw(planeShader);
 
-        planeShader.setUniform("spotlight.constant", 1.0f);
-        planeShader.setUniform("spotlight.linear", 0.027f);
-        planeShader.setUniform("spotlight.quadratic", 0.0028f);
+        //SpotLight
+        flashLight.draw(planeShader);
 
         
         
@@ -514,54 +461,30 @@ int main()
 
         glBindVertexArray(0);
         
-        susaneShader.use();
+        marioShader.use();
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -0.5f, 1.5f));
         model = glm::scale(model, glm::vec3(0.3f));
-        susaneShader.setUniform("textureValue", glm::vec2(1.0f));
-        susaneShader.setUniform("model", model);
+        marioShader.setUniform("textureValue", glm::vec2(1.0f));
+        marioShader.setUniform("model", model);
 
-        susaneShader.setUniform("time", (float)glfwGetTime());
-        susaneShader.setUniform("projection", projection);
-        susaneShader.setUniform("view", view);
+        marioShader.setUniform("time", (float)glfwGetTime());
+        marioShader.setUniform("projection", projection);
+        marioShader.setUniform("view", view);
 
         //Directional light
-        susaneShader.setUniform("directionalLight.direction", glm::vec3(5.0f, 0.0f, 10.0f));
-        susaneShader.setUniform("directionalLight.ambient", glm::vec3(0.1f));
-        susaneShader.setUniform("directionalLight.diffuse", glm::vec3(0.2f, 0.0f, 0.2f));
-        susaneShader.setUniform("directionalLight.specular", glm::vec3(0.5f));
-
+        sunLight.draw(marioShader);
 
         //Point Light
-        for (int i = 0; i < 4; i++)
-        {
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].position", pointLightPositions[i]);
-
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].constant", 1.0f);
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].linear", 0.027f);
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].quadratic", 0.0028f);
-
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].ambient", glm::vec3(0.1f));
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].diffuse", glm::vec3(1.0f, 1.0f, 0.5f));
-            susaneShader.setUniform("pointLight[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.0f, 0.4f));
-        }
+        focoLight.draw(marioShader);
 
         //SpotLight
-        susaneShader.setUniform("spotlight.position", glm::vec3(4.0f, 4.0f, 4.0f));
-        susaneShader.setUniform("spotlight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
-        susaneShader.setUniform("spotlight.cutOff", glm::cos(glm::radians(15.5f)));
-        susaneShader.setUniform("spotlight.outerCutOff", glm::cos(glm::radians(25.0f)));
-        susaneShader.setUniform("spotlight.ambient", glm::vec3(0.1f));
-        susaneShader.setUniform("spotlight.diffuse", glm::vec3(1.0f));
-        susaneShader.setUniform("spotlight.specular", glm::vec3(1.0f));
+        flashLight.draw(marioShader);
 
-        susaneShader.setUniform("spotlight.constant", 1.0f);
-        susaneShader.setUniform("spotlight.linear", 0.027f);
-        susaneShader.setUniform("spotlight.quadratic", 0.0028f);
-        susaneShader.setUniform("material.texture_specular1", 1);
-        susaneShader.setUniform("material.shininess", 32.0f);
+        marioShader.setUniform("material.specular", 1);
+        marioShader.setUniform("material.shininess", 128.0f);
 
-        suzaneModel.draw(susaneShader);
+        marioModel.draw(marioShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
