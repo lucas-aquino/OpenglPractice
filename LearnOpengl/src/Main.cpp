@@ -21,7 +21,13 @@
 #include "lights/SpotLight.h"
 #include "lights/DirectionalLight.h"
 
-//TODO:: HACER LAS CLASES DE LUCES
+/*TODO: 
+    limpieza de codigo:
+       - cambiar los shader para solo usar uno
+       - tranformar los cubos y el plano en Mesh
+    Actualizar la carga de texturas de los modelos con la clase de ImageTexture y cambiar el nombre de ImageTexture a Texture
+    Actualizar los Paths 
+*/
 
 //Esta funcion sirve para que el viewport de opengl se ajuste al tamano de la ventana cuando este sea modificado por el usuario
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
@@ -110,11 +116,11 @@ int main()
     }
     
     
-    Shader cubeShader(VERTEX_SHADER_PATH, DEPTH_BUFFER_TEST);
-    Shader planeShader(VERTEX_SHADER_PATH, DEPTH_BUFFER_TEST);
-    Shader marioShader(VERTEX_SHADER_PATH, DEPTH_BUFFER_TEST);
+    Shader cubeShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+    Shader planeShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+    Shader marioShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
 
-    Shader lightShader(VERTEX_LIGHTSHADER_PATH, DEPTH_BUFFER_TEST);
+    Shader lightShader(VERTEX_LIGHTSHADER_PATH, FRAGMENT_SHADER_PATH);
 
 
     //VERTEX DATA
@@ -321,6 +327,9 @@ int main()
 
     //Habilita el Z-Buffer: buffer de profundidad
     glEnable(GL_DEPTH_TEST);
+
+    //Habilita el stencil buffer 
+    glEnable(GL_STENCIL_TEST);
     
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  
 
@@ -336,17 +345,8 @@ int main()
         processInput(window);
 
         glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        
-        /*Tranformation
-        glm::mat4 transform = glm::mat4(1.0f);
-        //glm::rotate(transform, glm::radians(45deg), glm::vec3(0.0, 0.0, ))
-        transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
-        transform = glm::translate(transform, glm::vec3(sin((float)glfwGetTime()), cos((float)glfwGetTime()), 0.0f));
-        transform = glm::rotate(transform, -(float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));*/
-
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glStencilFunc(GL_INCR_WRAP, 1, 0xFF);
         //BindTextures
         
         cubeDiffuseMap.bind();
@@ -360,6 +360,7 @@ int main()
         //Camera
 
         //PROJECTION MATRIX 4X4: La proyeccion no se suele cambiar frecuentemente por eso es mas eficiente ponerlo fuera del mainloop
+        //pero en este caso debido que se implementa el zoom se pone en el mainloop
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(mainCamera.Zoom), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
@@ -423,35 +424,33 @@ int main()
         
 
         //Plane
-        planeShader.use();
-        planeShader.setUniform("textureValue", glm::vec2((float)planeDiffuseMap.getHeight() / (float)planeDiffuseMap.getWidth() * 1.0f, 1.0f));
+        //planeShader.use();
+        cubeShader.setUniform("textureValue", glm::vec2((float)planeDiffuseMap.getHeight() / (float)planeDiffuseMap.getWidth() * 1.0f, 1.0f));
 
         //Directional light
-        sunLight.draw(planeShader);
+        sunLight.draw(cubeShader);
 
         //Point Light
-        focoLight.draw(planeShader);
+        focoLight.draw(cubeShader);
 
         //SpotLight
-        flashLight.draw(planeShader);
-
-        
+        flashLight.draw(cubeShader);
         
 
-        planeShader.setUniform("material.diffuse", planeDiffuseMap.getBindSlot());
-        planeShader.setUniform("material.specular", planeSpecularMap.getBindSlot());
-        planeShader.setUniform("material.shininess", 32.0f);
+        cubeShader.setUniform("material.diffuse", planeDiffuseMap.getBindSlot());
+        cubeShader.setUniform("material.specular", planeSpecularMap.getBindSlot());
+        cubeShader.setUniform("material.shininess", 32.0f);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, planePosition);
         model = glm::scale(model, glm::vec3(6.0f));
-        planeShader.setUniform("model", model);
+        cubeShader.setUniform("model", model);
 
-        planeShader.setUniform("viewPosition", mainCamera.Position);
+        cubeShader.setUniform("viewPosition", mainCamera.Position);
 
-        planeShader.setUniform("time", (float)glfwGetTime());
-        planeShader.setUniform("projection", projection);
-        planeShader.setUniform("view", view);
+        cubeShader.setUniform("time", (float)glfwGetTime());
+        cubeShader.setUniform("projection", projection);
+        cubeShader.setUniform("view", view);
 
 
 

@@ -24,16 +24,16 @@ public:
 
     virtual void draw(Shader &shader) = 0;
 
-    virtual void setPosition(glm::vec3 position) = 0;
+    virtual void setPosition(const glm::vec3& position) = 0;
     virtual void setPosition(float x, float y, float z) = 0;
 
-    virtual void setAmbient(glm::vec3 ambient)  = 0;
+    virtual void setAmbient(const glm::vec3& ambient)  = 0;
     virtual void setAmbient(float r, float g, float b) = 0;
 
-    virtual void setDiffuse(glm::vec3 diffuse) = 0;
+    virtual void setDiffuse(const glm::vec3& diffuse) = 0;
     virtual void setDiffuse(float r, float g, float b) = 0;
 
-    virtual void setSpecular(glm::vec3 specular) = 0;
+    virtual void setSpecular(const glm::vec3& specular) = 0;
     virtual void setSpecular(float r, float g, float b) = 0;
 
 };

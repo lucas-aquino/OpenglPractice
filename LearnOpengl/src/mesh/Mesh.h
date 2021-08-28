@@ -35,8 +35,8 @@ class Mesh
     unsigned int VBO, VAO, EBO;
 
 public:
-    Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, std::vector<Texture>& textures);
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures);
 
     void setupMesh();
-    void draw(Shader& shader);
+    void draw(const Shader& shader);
 };
